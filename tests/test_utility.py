@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-
 import os
 
 import pytest
 
-from files import file_read
-from directories import directory_create, directory_delete
+from democritus_file_system import file_read, directory_create, directory_delete
 from democritus_utility import (
     request_or_read,
     is_sorted,
@@ -14,7 +11,6 @@ from democritus_utility import (
     unsorted_values,
     sorted_values,
     unique_items,
-    atomic_write,
     prettify,
 )
 
@@ -22,26 +18,6 @@ TEST_DIRECTORY_PATH = './test_files'
 NON_EXISTENT_FILE_PATH = './foo'
 TEST_FILE_NAME = 'a'
 EXISTING_FILE_PATH = os.path.join(TEST_DIRECTORY_PATH, TEST_FILE_NAME)
-
-
-def test_atomic_write_docs_1():
-    directory_create(TEST_DIRECTORY_PATH)
-    FILE_CONTENTS = 'foo'
-
-    with atomic_write(EXISTING_FILE_PATH) as f:
-        f.write(FILE_CONTENTS)
-    assert file_read(EXISTING_FILE_PATH) == FILE_CONTENTS
-
-    with atomic_write(EXISTING_FILE_PATH) as f:
-        f.write(FILE_CONTENTS)
-    assert file_read(EXISTING_FILE_PATH) == FILE_CONTENTS
-
-    # if we try to write to an existing file with `overwrite=False`, we will get an error
-    with pytest.raises(FileExistsError):
-        with atomic_write(EXISTING_FILE_PATH, overwrite=False) as f:
-            f.write(FILE_CONTENTS)
-
-    directory_delete(TEST_DIRECTORY_PATH)
 
 
 def test_unique_items_1():
@@ -127,9 +103,10 @@ def test_first_unsorted_value_1():
 
 @pytest.mark.network
 def test_request_or_read_1():
-    s = os.path.abspath(os.path.join(os.path.dirname(__file__), './utility.py'))
+    s = os.path.abspath(__file__)
     result = request_or_read(s)
-    assert 'def request_or_read(path):' in result
+    print(result)
+    assert 'def test_request_or_read_1():' in result
 
     s = 'https://hightower.space/projects'
     result = request_or_read(s)

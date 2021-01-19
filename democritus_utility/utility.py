@@ -1,16 +1,8 @@
-# -*- coding: utf-8 -*-
 """This is a collection of functions that really don't belong anywhere else."""
 
-import contextlib
-import os
-import sys
-from typing import Any, Iterable
+from typing import Any, Iterable, List, Dict
 
-from atomicwrites import atomic_write as atomic_write_, AtomicWriter
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
-import decorators
-from typings import ListOfAnys, DictStrKeySetVal
+from .utility_temp_utils import listify_first_arg, copy_first_arg
 
 
 def has_more_than_one_item(thing: Any) -> bool:
@@ -31,14 +23,14 @@ def has_one_item(thing: Any) -> bool:
 # TODO: there should be a decorator around this function (or maybe it should be converted entirely to a decorator)
 def request_or_read(path):
     """If the given path is a URL, request the URL and return the content; if the path exists read the file; otherwise, just return the string and assume it is the input itself."""
-    from urls import is_url
-    from networking import get
-    from files import file_exists, file_read
+    from democritus_urls import is_url
+    from democritus_networking import get
+    from democritus_file_system import file_exists, file_read
 
     # TODO: improve the code below; it is all wrapped in a try-except block primarily due to ValueErrors when trying to check if the file exists
     try:
         if is_url(path):
-            return get(path)
+            return get(path, process_response=True)
         # TODO: do more here to make sure the path looks like a file path
         elif file_exists(path):
             return file_read(path)
@@ -48,13 +40,13 @@ def request_or_read(path):
         return path
 
 
-@decorators.listify_first_arg
+@listify_first_arg
 def is_sorted(iterable, *, descending: bool = False) -> bool:
     """Return whether or not the iterable is sorted."""
     return sorted(iterable, reverse=descending) == iterable
 
 
-@decorators.listify_first_arg
+@listify_first_arg
 def first_unsorted_value(iterable, *, descending: bool = False) -> Any:
     """Return the first unsorted value in the iterable."""
     sorted_items = sorted(iterable, reverse=descending)
@@ -63,7 +55,8 @@ def first_unsorted_value(iterable, *, descending: bool = False) -> Any:
             return original_item
 
 
-@decorators.listify_first_arg
+@listify_first_arg
+@copy_first_arg
 def last_unsorted_value(iterable, *, descending: bool = False) -> Any:
     """Return the last unsorted value in the iterable."""
     # we reverse everything so we can iterate through the iterable and return the first item that is not sorted
@@ -76,7 +69,7 @@ def last_unsorted_value(iterable, *, descending: bool = False) -> Any:
             return original_item
 
 
-@decorators.listify_first_arg
+@listify_first_arg
 def unsorted_values(iterable, *, descending: bool = False) -> Iterable[Any]:
     """."""
     sorted_items = sorted(iterable, reverse=descending)
@@ -85,7 +78,7 @@ def unsorted_values(iterable, *, descending: bool = False) -> Iterable[Any]:
             yield original_item
 
 
-@decorators.listify_first_arg
+@listify_first_arg
 def sorted_values(iterable, *, descending: bool = False) -> Iterable[Any]:
     """."""
     sorted_items = sorted(iterable, reverse=descending)
@@ -123,7 +116,7 @@ def zip_if_same_length(*iterables, debug_failure: bool = False):
         yield i
 
 
-def unique_items(iterable_a: Any, iterable_b: Any) -> DictStrKeySetVal:
+def unique_items(iterable_a: Any, iterable_b: Any) -> Dict[str, set]:
     """Find the values unique to iterable_a and iterable_b (relative to one another)."""
     unique_items_list = {'a': [], 'b': []}
 
@@ -146,28 +139,3 @@ def prettify(thing: Any, *args):
 def pretty_print(thing: Any, *args):
     """."""
     print(prettify(thing, *args))
-
-
-class AtomicWriterPerms(AtomicWriter):
-    """This class wraps the AtomicWriter from the atomicwrites package to update the file permissions after the file is created.
-
-    This snippet was taken from/inspired by the code here: https://github.com/OCR-D/core/pull/625."""
-
-    def get_fileobject(self, **kwargs):
-        f = super().get_fileobject(**kwargs)
-        try:
-            mode = os.stat(self._path).st_mode
-        except FileNotFoundError:
-            # Creating a new file, emulate what os.open() does
-            mask = os.umask(0)
-            os.umask(mask)
-            mode = 0o664 & ~mask
-        fd = f.fileno()
-        os.fchmod(fd, mode)
-        return f
-
-
-@contextlib.contextmanager
-def atomic_write(fpath, *, overwrite: bool = True, **cls_kwargs):
-    with atomic_write_(fpath, writer_cls=AtomicWriterPerms, overwrite=overwrite, **cls_kwargs) as f:
-        yield f
