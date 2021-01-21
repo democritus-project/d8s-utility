@@ -2,8 +2,6 @@
 
 from setuptools import setup, find_packages
 
-from democritus_utility import __version__
-
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
@@ -15,7 +13,6 @@ with open('requirements_dev.txt') as requirements_dev_file:
 
 setup(
     name='democritus_utility',
-    version=__version__,
     description="Democritus functions for working with utility functions.",
     long_description=readme,
     long_description_content_type="text/markdown",
