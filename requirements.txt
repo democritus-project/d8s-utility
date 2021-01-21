@@ -1,4 +1,4 @@
-democritus-file-system @ git+https://github.com/democritus-project/democritus-file-system.git#egg=democritus-file-system
-democritus-networking @ git+https://github.com/democritus-project/democritus-networking.git#egg=democritus-networking
-democritus-urls @ git+https://github.com/democritus-project/democritus-urls.git#egg=democritus-urls
+democritus-file-system
+democritus-networking
+democritus-urls
 importlib-metadata; python_version < '3.8'
