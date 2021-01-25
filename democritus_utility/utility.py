@@ -1,8 +1,11 @@
 """This is a collection of functions that really don't belong anywhere else."""
 
-from typing import Any, Iterable, List, Dict
+import functools
+from typing import Any, Iterable, List, Dict, Union
 
 from .utility_temp_utils import listify_first_arg, copy_first_arg
+
+StrOrNumberType = Union[str, int, float]
 
 
 def has_more_than_one_item(thing: Any) -> bool:
@@ -154,3 +157,165 @@ def subprocess_run(command, input_=None):
     process = subprocess.run(command_list, input=input_, text=True, capture_output=True)
     result = (process.stdout, process.stderr)
     return result
+
+
+def stringify_first_arg(func):
+    """Decorator to convert the first argument to a string."""
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        first_arg_string = str(args[0])
+        other_args = args[1:]
+        return func(first_arg_string, *other_args, **kwargs)
+
+    return wrapper
+
+
+def retry_if_no_result(wait_seconds=10):
+    """Decorator to call the given function and recall it if it returns nothing."""
+
+    def retry_decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            import time
+
+            return_value = func(*args, **kwargs)
+
+            if return_value:
+                return return_value
+            else:
+                time.sleep(wait_seconds)
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return retry_decorator
+
+
+def copy_first_arg(func):
+    """Decorator to make a copy of the first argument and pass into the func."""
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        import copy
+
+        first_arg = args[0]
+        other_args = args[1:]
+        try:
+            first_arg_copy = copy.deepcopy(first_arg)
+        # a RecursionError can occur when trying to do a deep copy on objects of certain classes (e.g. beautifulsoup objects) - see: https://github.com/biopython/biopython/issues/787, https://bugs.python.org/issue5508, and https://github.com/cloudtools/troposphere/issues/648
+        except RecursionError as e:
+            message = 'Performing a deep copy on the first arg failed; I\'ll just perform a shallow copy.'
+            print(message)
+            first_arg_copy = copy.copy(first_arg)
+        return func(first_arg_copy, *other_args, **kwargs)
+
+    return wrapper
+
+
+def map_first_arg(func):
+    """If the first argument is a list or tuple, iterate through each item in the list and send it to the function."""
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        iterable_arg = args[0]
+        other_args = args[1:]
+
+        # TODO: define these types elsewhere
+        if isinstance(iterable_arg, (list, set, tuple)):
+            results = []
+            # iterate through the list argument sending each item into the function (along with the other arguments/kwargs)
+            for item in iterable_arg:
+                results.append(func(item, *other_args, **kwargs))
+            return results
+        else:
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
+def repeat_concurrently(n: int = 10):
+    """Repeat the decorated function concurrently n times."""
+
+    def actual_decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            import concurrent.futures
+
+            results = []
+
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                for i in range(n):
+                    function_submission = executor.submit(func, *args, **kwargs)
+                    yield function_submission.result()
+
+            return results
+
+        return wrapper
+
+    return actual_decorator
+
+
+# TODO: there may be a cleaner way to create a decorator that takes arguments, but this works for now (see: https://stackoverflow.com/questions/10176226/how-do-i-pass-extra-arguments-to-a-python-decorator)
+def validate_keyword_arg_value(
+    keyword: str, valid_keyword_values: List[str], fail_if_keyword_not_found: bool = False
+):
+    """Validate that the value for the given keyword is in the list of valid_keyword_values."""
+
+    def actual_decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            keyword_value = kwargs.get(keyword)
+            if not keyword_value:
+                if fail_if_keyword_not_found:
+                    message = f'The keyword "{keyword}" was not given.'
+                    raise RuntimeError(message)
+            else:
+                if keyword_value not in valid_keyword_values:
+                    message = f'The value of the "{keyword}" keyword argument is not valid (valid values are: {valid_keyword_values}).'
+                    raise RuntimeError(message)
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return actual_decorator
+
+
+def validate_arg_value(arg_index: StrOrNumberType, valid_values: List[str]):
+    """Validate that the value of the argument at the given arg_index is in the list of valid_values."""
+
+    def actual_decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            arg_index_int = int(arg_index)
+            arg_value = args[arg_index_int]
+
+            if arg_value not in valid_values:
+                message = f'The value of the argument at index {arg_index} (whose value is "{arg_value}") is not valid (valid values are: {valid_values}).'
+                raise RuntimeError(message)
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return actual_decorator
+
+
+def wait_and_retry_on_failure(wait_seconds=10):
+    """Try to call the given function. If there is an exception thrown by the function, wait for 10 seconds and try again."""
+
+    def retry_decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            import time
+
+            try:
+                return func(*args, **kwargs)
+            except:
+                time.sleep(wait_seconds)
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return retry_decorator

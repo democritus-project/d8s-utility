@@ -13,6 +13,12 @@ from democritus_utility import (
     unique_items,
     prettify,
     subprocess_run,
+    stringify_first_arg,
+    retry_if_no_result,
+    copy_first_arg,
+    map_first_arg,
+    repeat_concurrently,
+    wait_and_retry_on_failure,
 )
 
 TEST_DIRECTORY_PATH = './test_files'
@@ -170,3 +176,148 @@ def test_subprocess_run_input():
     test_input = 'c\nb\na'
     stdout, stderr = subprocess_run('sort', input_=test_input)
     assert stdout == 'a\nb\nc\n'
+
+
+@stringify_first_arg
+def stringify_first_arg_test_func(arg):
+    return arg
+
+
+def test_stringify_first_arg_1():
+    result = stringify_first_arg_test_func('foo')
+    assert result == 'foo'
+
+    result = stringify_first_arg_test_func(1)
+    assert result == '1'
+
+
+@retry_if_no_result(wait_seconds=3)
+def retry_if_no_result_test_func():
+    return None
+
+
+def test_retry_if_no_result_1():
+    from democritus_timer import timer_start, timer_stop
+
+    # time the execution
+    timer_name = timer_start()
+    result = retry_if_no_result_test_func()
+    execution_time = timer_stop(timer_name)
+
+    # make sure the retry_if_no_result_test_func was run twice with the appropriate amount of time in between
+    assert execution_time > 3
+    assert result == None
+
+
+@copy_first_arg
+def copy_first_arg_test_func_a(a):
+    return a
+
+
+@pytest.mark.network
+def test_copy_first_arg_1():
+    from democritus_networking import get
+
+    # a RecursionError will occur when trying to do a deep copy of beautifulsoup objects - see: https://github.com/biopython/biopython/issues/787, https://bugs.python.org/issue5508, and https://github.com/cloudtools/troposphere/issues/648...
+    # this test makes sure that the `copy_first_arg` decorator will properly fall back from a deep copy to a shallow copy
+    html_text = get('https://hightower.space/')
+    soup = html_soupify(html_text)
+    copy_first_arg_test_func_a(soup)
+
+
+@map_first_arg
+def map_first_arg_test_func_1(a):
+    return a[::-1]
+
+
+def test_map_first_arg_1():
+    result = map_first_arg_test_func_1('abc')
+    assert result == 'cba'
+
+    result = map_first_arg_test_func_1(['abc', 'cat'])
+    assert result == ['cba', 'tac']
+
+
+@map_first_arg
+def map_first_arg_test_func_kwargs(a, reverse=True):
+    if reverse:
+        return a[::-1]
+    else:
+        return a
+
+
+def test_map_first_arg_kwargs():
+    result = map_first_arg_test_func_kwargs('abc', reverse=True)
+    assert result == 'cba'
+
+    with pytest.raises(TypeError):
+        result = map_first_arg_test_func_kwargs('abc', 'def', 'ghi')
+
+    result = map_first_arg_test_func_kwargs('abc', reverse=False)
+    assert result == 'abc'
+
+    result = map_first_arg_test_func_kwargs(['abc', 'cat'], reverse=True)
+    assert result == ['cba', 'tac']
+
+    result = map_first_arg_test_func_kwargs(['abc', 'cat'], reverse=False)
+    assert result == ['abc', 'cat']
+
+
+@map_first_arg
+def map_first_arg_test_func_multiple_args(a, b, reverse=True):
+    if reverse:
+        return a[::-1], b
+    else:
+        return a, b
+
+
+def test_map_first_arg_multiple_args():
+    result = map_first_arg_test_func_multiple_args('abc', 'a', reverse=True)
+    assert result == ('cba', 'a')
+
+    result = map_first_arg_test_func_multiple_args('abc', ['foo'], reverse=False)
+    assert result == ('abc', ['foo'])
+
+    result = map_first_arg_test_func_multiple_args(['abc', 'cat'], '', reverse=True)
+    assert result == [('cba', ''), ('tac', '')]
+
+    result = map_first_arg_test_func_multiple_args(['abc', 'cat'], None, reverse=False)
+    assert result == [('abc', None), ('cat', None)]
+
+
+@repeat_concurrently()
+def repeat_concurrently_test_func_a():
+    return 1
+
+
+@repeat_concurrently(n=100)
+def repeat_concurrently_test_func_b():
+    return 1
+
+
+def test_repeat_concurrently_1():
+    results = repeat_concurrently_test_func_a()
+    assert tuple(results) == (1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+
+    results = tuple(repeat_concurrently_test_func_b())
+    assert len(results) == 100
+    assert results.count(1) == 100
+
+
+@wait_and_retry_on_failure(wait_seconds=3)
+def wait_and_retry_on_failure_test_func():
+    assert 1 == 2
+
+
+def test_wait_and_retry_on_failure_1():
+    from timer import timer_start, timer_stop
+
+    # time the execution
+    timer_name = timer_start()
+    # catch the error (which will occur both the first and second times the app is run, but will not be caught by the decorator the second time)
+    with pytest.raises(AssertionError):
+        wait_and_retry_on_failure_test_func()
+    execution_time = timer_stop(timer_name)
+
+    # make sure the wait_and_retry_on_failure_test_func was run twice with the appropriate amount of time in between
+    assert execution_time > 3
