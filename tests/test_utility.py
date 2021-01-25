@@ -12,6 +12,7 @@ from democritus_utility import (
     sorted_values,
     unique_items,
     prettify,
+    subprocess_run,
 )
 
 TEST_DIRECTORY_PATH = './test_files'
@@ -139,3 +140,33 @@ def test_prettify_1():
         == '''{'ids': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
  'nums': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}'''
     )
+
+
+def test_subprocess_run_docs_1():
+    command = 'ls'
+    stdout, stderr = subprocess_run(command)
+    assert stdout.startswith('LICENSE\nPipfile\n')
+
+    command = 'ls -la'
+    stdout, stderr = subprocess_run(command)
+    assert stdout.startswith('total ')
+    assert 'drwxr-xr-x' in stdout
+
+    command = ['ls', '-la']
+    stdout, stderr = subprocess_run(command)
+    assert stdout.startswith('total ')
+    assert 'drwxr-xr-x' in stdout
+
+
+def test_subprocess_run_errors_1():
+    command = 'a'
+    # TODO: not sure why this raises a FileNotFoundError rather than an error saying that the given command was not found
+    with pytest.raises(FileNotFoundError):
+        subprocess_run(command)
+
+
+def test_subprocess_run_input():
+    # this test was inspired by the comment here: https://gist.github.com/waylan/2353749#gistcomment-2843563
+    test_input = 'c\nb\na'
+    stdout, stderr = subprocess_run('sort', input_=test_input)
+    assert stdout == 'a\nb\nc\n'

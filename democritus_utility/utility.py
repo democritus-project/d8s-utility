@@ -139,3 +139,18 @@ def prettify(thing: Any, *args):
 def pretty_print(thing: Any, *args):
     """."""
     print(prettify(thing, *args))
+
+
+def subprocess_run(command, input_=None):
+    """Run the given command as if it were run in a command line."""
+    import shlex
+    import subprocess
+
+    if isinstance(command, str):
+        command_list = shlex.split(command)
+    else:
+        command_list = command
+
+    process = subprocess.run(command_list, input=input_, text=True, capture_output=True)
+    result = (process.stdout, process.stderr)
+    return result
