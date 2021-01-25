@@ -19,12 +19,21 @@ from democritus_utility import (
     map_first_arg,
     repeat_concurrently,
     wait_and_retry_on_failure,
+    zip_if_same_length,
 )
 
 TEST_DIRECTORY_PATH = './test_files'
 NON_EXISTENT_FILE_PATH = './foo'
 TEST_FILE_NAME = 'a'
 EXISTING_FILE_PATH = os.path.join(TEST_DIRECTORY_PATH, TEST_FILE_NAME)
+
+
+def test_zip_if_same_length_1():
+    result = tuple(zip_if_same_length([1, 2], [1, 2]))
+    assert result == ((1, 1), (2, 2))
+
+    with pytest.raises(ValueError):
+        tuple(zip_if_same_length([1, 2], [1, 2, 3]))
 
 
 def test_unique_items_1():

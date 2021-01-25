@@ -111,9 +111,15 @@ def zip_padded(*iterables, fillvalue: Any = None):
 
 def zip_if_same_length(*iterables, debug_failure: bool = False):
     """Zip the given iterables if they are the same length. If they are not the same length, raise an assertion error."""
-    from lists import lists_are_same_length
+    from democritus_lists import lists_are_same_length
 
-    assert lists_are_same_length(*iterables, debug_failure=debug_failure)
+    print('here')
+    print(iterables)
+    print(lists_are_same_length(*iterables, debug_failure=debug_failure))
+
+    if not lists_are_same_length(*iterables, debug_failure=debug_failure):
+        message = 'The given iterables are not the same length.'
+        raise ValueError(message)
 
     for i in zip(*iterables):
         yield i
@@ -257,9 +263,7 @@ def repeat_concurrently(n: int = 10):
 
 
 # TODO: there may be a cleaner way to create a decorator that takes arguments, but this works for now (see: https://stackoverflow.com/questions/10176226/how-do-i-pass-extra-arguments-to-a-python-decorator)
-def validate_keyword_arg_value(
-    keyword: str, valid_keyword_values: List[str], fail_if_keyword_not_found: bool = False
-):
+def validate_keyword_arg_value(keyword: str, valid_keyword_values: List[str], fail_if_keyword_not_found: bool = False):
     """Validate that the value for the given keyword is in the list of valid_keyword_values."""
 
     def actual_decorator(func):
