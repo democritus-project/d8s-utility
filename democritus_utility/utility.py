@@ -23,7 +23,6 @@ def has_one_item(thing: Any) -> bool:
     return thing and len(thing) == 1
 
 
-# TODO: there should be a decorator around this function (or maybe it should be converted entirely to a decorator)
 def request_or_read(path):
     """If the given path is a URL, request the URL and return the content; if the path exists read the file; otherwise, just return the string and assume it is the input itself."""
     from democritus_urls import is_url
@@ -41,6 +40,21 @@ def request_or_read(path):
             return path
     except:
         return path
+
+
+def request_or_read_first_arg(func):
+    """If the first arg is a url - request the URL. If it is a file path, try to read the file. If it is neither a URL nor file path, return the content of the first arg."""
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        first_arg = args[0]
+        other_args = args[1:]
+
+        new_first_arg = request_or_read(first_arg)
+
+        return func(new_first_arg, *other_args, **kwargs)
+
+    return wrapper
 
 
 @listify_first_arg
@@ -112,10 +126,6 @@ def zip_padded(*iterables, fillvalue: Any = None):
 def zip_if_same_length(*iterables, debug_failure: bool = False):
     """Zip the given iterables if they are the same length. If they are not the same length, raise an assertion error."""
     from democritus_lists import lists_are_same_length
-
-    print('here')
-    print(iterables)
-    print(lists_are_same_length(*iterables, debug_failure=debug_failure))
 
     if not lists_are_same_length(*iterables, debug_failure=debug_failure):
         message = 'The given iterables are not the same length.'

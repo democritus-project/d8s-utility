@@ -20,6 +20,7 @@ from democritus_utility import (
     repeat_concurrently,
     wait_and_retry_on_failure,
     zip_if_same_length,
+    request_or_read_first_arg,
 )
 
 TEST_DIRECTORY_PATH = './test_files'
@@ -226,10 +227,11 @@ def copy_first_arg_test_func_a(a):
 @pytest.mark.network
 def test_copy_first_arg_1():
     from democritus_networking import get
+    from democritus_html import html_soupify
 
     # a RecursionError will occur when trying to do a deep copy of beautifulsoup objects - see: https://github.com/biopython/biopython/issues/787, https://bugs.python.org/issue5508, and https://github.com/cloudtools/troposphere/issues/648...
     # this test makes sure that the `copy_first_arg` decorator will properly fall back from a deep copy to a shallow copy
-    html_text = get('https://hightower.space/')
+    html_text = get('https://hightower.space/', process_response=True)
     soup = html_soupify(html_text)
     copy_first_arg_test_func_a(soup)
 
@@ -330,3 +332,30 @@ def test_wait_and_retry_on_failure_1():
 
     # make sure the wait_and_retry_on_failure_test_func was run twice with the appropriate amount of time in between
     assert execution_time > 3
+
+
+@request_or_read_first_arg
+def request_or_read_first_arg_test_func(a):
+    return a
+
+
+def test_request_or_read_first_arg_1():
+    # test a url
+    s = 'https://hightower.space/projects'
+    result = request_or_read_first_arg_test_func(s)
+    assert 'Floyd Hightower' in result
+
+    # test a file path
+    s = os.path.abspath(__file__)
+    result = request_or_read_first_arg_test_func(s)
+    assert 'def test_request_or_read_first_arg_1():' in result
+
+    # test a non-existent file path
+    s = '/foo/bar/non-existent.txt'
+    result = request_or_read_first_arg_test_func(s)
+    assert result == s
+
+    # test another string
+    s = 'foobar'
+    result = request_or_read_first_arg_test_func(s)
+    assert result == s
