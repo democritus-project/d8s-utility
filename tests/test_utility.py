@@ -322,7 +322,7 @@ def wait_and_retry_on_failure_test_func():
 
 
 def test_wait_and_retry_on_failure_1():
-    from timer import timer_start, timer_stop
+    from democritus_timer import timer_start, timer_stop
 
     # time the execution
     timer_name = timer_start()
