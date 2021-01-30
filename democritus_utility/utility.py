@@ -170,7 +170,7 @@ def subprocess_run(command, input_=None):
     else:
         command_list = command
 
-    process = subprocess.run(command_list, input=input_, text=True, capture_output=True)
+    process = subprocess.run(command_list, input=input_, universal_newlines=True, capture_output=True)
     result = (process.stdout, process.stderr)
     return result
 

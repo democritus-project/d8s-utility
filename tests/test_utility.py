@@ -161,16 +161,17 @@ def test_prettify_1():
 def test_subprocess_run_docs_1():
     command = 'ls'
     stdout, stderr = subprocess_run(command)
-    assert stdout.startswith('LICENSE\nPipfile\n')
+    assert 'LICENSE\n' in stdout
+    assert 'README.md\n' in stdout
 
     command = 'ls -la'
     stdout, stderr = subprocess_run(command)
-    assert stdout.startswith('total ')
+    assert 'total ' in stdout
     assert 'drwxr-xr-x' in stdout
 
     command = ['ls', '-la']
     stdout, stderr = subprocess_run(command)
-    assert stdout.startswith('total ')
+    assert 'total ' in stdout
     assert 'drwxr-xr-x' in stdout
 
 
