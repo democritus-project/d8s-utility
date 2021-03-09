@@ -1,11 +1,35 @@
 """This is a collection of functions that really don't belong anywhere else."""
 
 import functools
-from typing import Any, Iterable, List, Dict, Union
+from typing import Any, Dict, Iterable, List, Set, Union
 
-from .utility_temp_utils import listify_first_arg, copy_first_arg
+from .utility_temp_utils import listify_first_arg
 
 StrOrNumberType = Union[str, int, float]
+
+
+def copy_first_arg(func):
+    """Decorator to make a copy of the first argument and pass into the func."""
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        import copy
+
+        first_arg = args[0]
+        other_args = args[1:]
+        try:
+            first_arg_copy = copy.deepcopy(first_arg)
+        # a RecursionError can occur when trying to do a deep copy on objects of certain classes...
+        # (e.g. beautifulsoup objects)...
+        # see: https://github.com/biopython/biopython/issues/787, https://bugs.python.org/issue5508, and...
+        # https://github.com/cloudtools/troposphere/issues/648
+        except RecursionError:
+            message = 'Performing a deep copy on the first arg failed; I\'ll just perform a shallow copy.'
+            print(message)
+            first_arg_copy = copy.copy(first_arg)
+        return func(first_arg_copy, *other_args, **kwargs)
+
+    return wrapper
 
 
 def has_more_than_one_item(thing: Any) -> bool:
@@ -24,12 +48,16 @@ def has_one_item(thing: Any) -> bool:
 
 
 def request_or_read(path):
-    """If the given path is a URL, request the URL and return the content; if the path exists read the file; otherwise, just return the string and assume it is the input itself."""
-    from democritus_urls import is_url
-    from democritus_networking import get
-    from democritus_file_system import file_exists, file_read
+    """If the given path is a URL, request the URL and return the content; if the path exists read the file.
 
-    # TODO: improve the code below; it is all wrapped in a try-except block primarily due to ValueErrors when trying to check if the file exists
+    Otherwise, just return the string and assume it is the input itself.
+    """
+    from democritus_file_system import file_exists, file_read
+    from democritus_networking import get
+    from democritus_urls import is_url
+
+    # TODO: improve the code below; it is all wrapped in a try-except block primarily due to...
+    # ValueErrors when trying to check if the file exists
     try:
         if is_url(path):
             return get(path, process_response=True)
@@ -38,12 +66,15 @@ def request_or_read(path):
             return file_read(path)
         else:
             return path
-    except:
+    except ValueError:
         return path
 
 
 def request_or_read_first_arg(func):
-    """If the first arg is a url - request the URL. If it is a file path, try to read the file. If it is neither a URL nor file path, return the content of the first arg."""
+    """If the first arg is a url - request the URL. If it is a file path, try to read the file.
+
+    If it is neither a URL nor file path, return the content of the first arg.
+    """
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -109,22 +140,17 @@ def ignore_errors(function, *args, **kwargs):
     result = None
     try:
         result = function(*args, **kwargs)
-    except:
+    except:  # pylint: disable=W0702  # noqa: E722
         pass
 
     return result
 
 
-def zip_padded(*iterables, fillvalue: Any = None):
-    """Zip through the longest iterable using the fillvalue to replace any items in an iterable once it has no more items."""
-    import itertools
-
-    for i in itertools.zip_longest(*iterables, fillvalue=fillvalue):
-        yield i
-
-
 def zip_if_same_length(*iterables, debug_failure: bool = False):
-    """Zip the given iterables if they are the same length. If they are not the same length, raise an assertion error."""
+    """Zip the given iterables if they are the same length.
+
+    If they are not the same length, raise an assertion error.
+    """
     from democritus_lists import lists_are_same_length
 
     if not lists_are_same_length(*iterables, debug_failure=debug_failure):
@@ -135,9 +161,9 @@ def zip_if_same_length(*iterables, debug_failure: bool = False):
         yield i
 
 
-def unique_items(iterable_a: Any, iterable_b: Any) -> Dict[str, set]:
+def unique_items(iterable_a: Any, iterable_b: Any) -> Dict[str, Set[Any]]:
     """Find the values unique to iterable_a and iterable_b (relative to one another)."""
-    unique_items_list = {'a': [], 'b': []}
+    unique_items_list: Dict[str, Set[Any]] = {'a': set(), 'b': set()}
 
     set_a = set(iterable_a)
     set_b = set(iterable_b)
@@ -208,27 +234,6 @@ def retry_if_no_result(wait_seconds=10):
     return retry_decorator
 
 
-def copy_first_arg(func):
-    """Decorator to make a copy of the first argument and pass into the func."""
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        import copy
-
-        first_arg = args[0]
-        other_args = args[1:]
-        try:
-            first_arg_copy = copy.deepcopy(first_arg)
-        # a RecursionError can occur when trying to do a deep copy on objects of certain classes (e.g. beautifulsoup objects) - see: https://github.com/biopython/biopython/issues/787, https://bugs.python.org/issue5508, and https://github.com/cloudtools/troposphere/issues/648
-        except RecursionError as e:
-            message = 'Performing a deep copy on the first arg failed; I\'ll just perform a shallow copy.'
-            print(message)
-            first_arg_copy = copy.copy(first_arg)
-        return func(first_arg_copy, *other_args, **kwargs)
-
-    return wrapper
-
-
 def map_first_arg(func):
     """If the first argument is a list or tuple, iterate through each item in the list and send it to the function."""
 
@@ -240,7 +245,7 @@ def map_first_arg(func):
         # TODO: define these types elsewhere
         if isinstance(iterable_arg, (list, set, tuple)):
             results = []
-            # iterate through the list argument sending each item into the function (along with the other arguments/kwargs)
+            # iterate through list argument sending each item to function (along with the other arguments/kwargs)
             for item in iterable_arg:
                 results.append(func(item, *other_args, **kwargs))
             return results
@@ -261,7 +266,7 @@ def repeat_concurrently(n: int = 10):
             results = []
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
-                for i in range(n):
+                for __ in range(n):
                     function_submission = executor.submit(func, *args, **kwargs)
                     yield function_submission.result()
 
@@ -272,7 +277,6 @@ def repeat_concurrently(n: int = 10):
     return actual_decorator
 
 
-# TODO: there may be a cleaner way to create a decorator that takes arguments, but this works for now (see: https://stackoverflow.com/questions/10176226/how-do-i-pass-extra-arguments-to-a-python-decorator)
 def validate_keyword_arg_value(keyword: str, valid_keyword_values: List[str], fail_if_keyword_not_found: bool = False):
     """Validate that the value for the given keyword is in the list of valid_keyword_values."""
 
@@ -280,14 +284,15 @@ def validate_keyword_arg_value(keyword: str, valid_keyword_values: List[str], fa
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             keyword_value = kwargs.get(keyword)
-            if not keyword_value:
-                if fail_if_keyword_not_found:
-                    message = f'The keyword "{keyword}" was not given.'
-                    raise RuntimeError(message)
-            else:
-                if keyword_value not in valid_keyword_values:
-                    message = f'The value of the "{keyword}" keyword argument is not valid (valid values are: {valid_keyword_values}).'
-                    raise RuntimeError(message)
+            if not keyword_value and fail_if_keyword_not_found:
+                message = f'The keyword "{keyword}" was not given.'
+                raise RuntimeError(message)
+            elif keyword_value not in valid_keyword_values:
+                message = (
+                    f'The value of the "{keyword}" keyword argument is not valid (valid values '
+                    + 'are: {valid_keyword_values}).'
+                )
+                raise RuntimeError(message)
 
             return func(*args, **kwargs)
 
@@ -306,7 +311,10 @@ def validate_arg_value(arg_index: StrOrNumberType, valid_values: List[str]):
             arg_value = args[arg_index_int]
 
             if arg_value not in valid_values:
-                message = f'The value of the argument at index {arg_index} (whose value is "{arg_value}") is not valid (valid values are: {valid_values}).'
+                message = (
+                    f'The value of the argument at index {arg_index} (whose value is "{arg_value}") '
+                    + 'is not valid (valid values are: {valid_values}).'
+                )
                 raise RuntimeError(message)
 
             return func(*args, **kwargs)
@@ -317,7 +325,10 @@ def validate_arg_value(arg_index: StrOrNumberType, valid_values: List[str]):
 
 
 def wait_and_retry_on_failure(wait_seconds=10):
-    """Try to call the given function. If there is an exception thrown by the function, wait for 10 seconds and try again."""
+    """Try to call the given function.
+
+    If there is an exception thrown by the function, wait for wait_seconds and try again.
+    """
 
     def retry_decorator(func):
         @functools.wraps(func)
@@ -326,7 +337,7 @@ def wait_and_retry_on_failure(wait_seconds=10):
 
             try:
                 return func(*args, **kwargs)
-            except:
+            except:  # pylint: disable=W0702  # noqa: E722
                 time.sleep(wait_seconds)
                 return func(*args, **kwargs)
 
