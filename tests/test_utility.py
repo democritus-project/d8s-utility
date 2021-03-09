@@ -2,25 +2,24 @@ import os
 
 import pytest
 
-from democritus_file_system import file_read, directory_create, directory_delete
 from democritus_utility import (
-    request_or_read,
-    is_sorted,
-    first_unsorted_value,
-    last_unsorted_value,
-    unsorted_values,
-    sorted_values,
-    unique_items,
-    prettify,
-    subprocess_run,
-    stringify_first_arg,
-    retry_if_no_result,
     copy_first_arg,
+    first_unsorted_value,
+    is_sorted,
+    last_unsorted_value,
     map_first_arg,
+    prettify,
     repeat_concurrently,
+    request_or_read,
+    request_or_read_first_arg,
+    retry_if_no_result,
+    sorted_values,
+    stringify_first_arg,
+    subprocess_run,
+    unique_items,
+    unsorted_values,
     wait_and_retry_on_failure,
     zip_if_same_length,
-    request_or_read_first_arg,
 )
 
 TEST_DIRECTORY_PATH = './test_files'
@@ -76,46 +75,46 @@ def test_sorted_values_1():
 
 def test_last_unsorted_value_1():
     l = [1, 2, 3, 4]
-    assert last_unsorted_value(l) == None
+    assert last_unsorted_value(l) is None
     assert last_unsorted_value(l, descending=True) == 4
 
     l = [4, 3, 2, 1]
     assert last_unsorted_value(l) == 1
-    assert last_unsorted_value(l, descending=True) == None
+    assert last_unsorted_value(l, descending=True) is None
 
     l = 'abc'
-    assert last_unsorted_value(l) == None
+    assert last_unsorted_value(l) is None
     assert last_unsorted_value(l, descending=True) == 'c'
 
     l = 'cdf'
-    assert last_unsorted_value(l) == None
+    assert last_unsorted_value(l) is None
     assert last_unsorted_value(l, descending=True) == 'f'
 
     l = 'cba'
     assert last_unsorted_value(l) == 'a'
-    assert last_unsorted_value(l, descending=True) == None
+    assert last_unsorted_value(l, descending=True) is None
 
 
 def test_first_unsorted_value_1():
     l = [1, 2, 3, 4]
-    assert first_unsorted_value(l) == None
+    assert first_unsorted_value(l) is None
     assert first_unsorted_value(l, descending=True) == 1
 
     l = [4, 3, 2, 1]
     assert first_unsorted_value(l) == 4
-    assert first_unsorted_value(l, descending=True) == None
+    assert first_unsorted_value(l, descending=True) is None
 
     l = 'abc'
-    assert first_unsorted_value(l) == None
+    assert first_unsorted_value(l) is None
     assert first_unsorted_value(l, descending=True) == 'a'
 
     l = 'cdf'
-    assert first_unsorted_value(l) == None
+    assert first_unsorted_value(l) is None
     assert first_unsorted_value(l, descending=True) == 'c'
 
     l = 'cba'
     assert first_unsorted_value(l) == 'c'
-    assert first_unsorted_value(l, descending=True) == None
+    assert first_unsorted_value(l, descending=True) is None
 
 
 @pytest.mark.network
@@ -217,7 +216,7 @@ def test_retry_if_no_result_1():
 
     # make sure the retry_if_no_result_test_func was run twice with the appropriate amount of time in between
     assert execution_time > 3
-    assert result == None
+    assert result is None
 
 
 @copy_first_arg
@@ -227,8 +226,8 @@ def copy_first_arg_test_func_a(a):
 
 @pytest.mark.network
 def test_copy_first_arg_1():
-    from democritus_networking import get
     from democritus_html import html_soupify
+    from democritus_networking import get
 
     # a RecursionError will occur when trying to do a deep copy of beautifulsoup objects - see: https://github.com/biopython/biopython/issues/787, https://bugs.python.org/issue5508, and https://github.com/cloudtools/troposphere/issues/648...
     # this test makes sure that the `copy_first_arg` decorator will properly fall back from a deep copy to a shallow copy
