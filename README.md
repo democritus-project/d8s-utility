@@ -1,8 +1,8 @@
 # Democritus Utility
 
-[![PyPI](https://img.shields.io/pypi/v/democritus-utility.svg)](https://pypi.python.org/pypi/democritus-utility)
-[![Build Status](https://travis-ci.com/democritus-project/democritus-utility.svg?branch=main)](https://travis-ci.com/democritus-project/democritus-utility)
-[![codecov](https://codecov.io/gh/democritus-project/democritus-utility/branch/main/graph/badge.svg?token=V0WOIXRGMM)](https://codecov.io/gh/democritus-project/democritus-utility)
+[![PyPI](https://img.shields.io/pypi/v/d8s-utility.svg)](https://pypi.python.org/pypi/d8s-utility)
+[![Build Status](https://travis-ci.com/democritus-project/d8s-utility.svg?branch=main)](https://travis-ci.com/democritus-project/d8s-utility)
+[![codecov](https://codecov.io/gh/democritus-project/d8s-utility/branch/main/graph/badge.svg?token=V0WOIXRGMM)](https://codecov.io/gh/democritus-project/d8s-utility)
 
 Democritus functions<sup>[1]</sup> for working with utility functions.
 
