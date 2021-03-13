@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from democritus_utility import (
+from d8s_utility import (
     copy_first_arg,
     first_unsorted_value,
     is_sorted,
