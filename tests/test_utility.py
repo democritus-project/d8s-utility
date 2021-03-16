@@ -207,7 +207,7 @@ def retry_if_no_result_test_func():
 
 
 def test_retry_if_no_result_1():
-    from democritus_timer import timer_start, timer_stop
+    from d8s_timer import timer_start, timer_stop
 
     # time the execution
     timer_name = timer_start()
@@ -226,8 +226,8 @@ def copy_first_arg_test_func_a(a):
 
 @pytest.mark.network
 def test_copy_first_arg_1():
-    from democritus_html import html_soupify
-    from democritus_networking import get
+    from d8s_html import html_soupify
+    from d8s_networking import get
 
     # a RecursionError will occur when trying to do a deep copy of beautifulsoup objects - see: https://github.com/biopython/biopython/issues/787, https://bugs.python.org/issue5508, and https://github.com/cloudtools/troposphere/issues/648...
     # this test makes sure that the `copy_first_arg` decorator will properly fall back from a deep copy to a shallow copy
@@ -321,7 +321,7 @@ def wait_and_retry_on_failure_test_func():
 
 
 def test_wait_and_retry_on_failure_1():
-    from democritus_timer import timer_start, timer_stop
+    from d8s_timer import timer_start, timer_stop
 
     # time the execution
     timer_name = timer_start()

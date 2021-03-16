@@ -52,9 +52,9 @@ def request_or_read(path):
 
     Otherwise, just return the string and assume it is the input itself.
     """
-    from democritus_file_system import file_exists, file_read
-    from democritus_networking import get
-    from democritus_urls import is_url
+    from d8s_file_system import file_exists, file_read
+    from d8s_networking import get
+    from d8s_urls import is_url
 
     # TODO: improve the code below; it is all wrapped in a try-except block primarily due to...
     # ValueErrors when trying to check if the file exists
@@ -151,7 +151,7 @@ def zip_if_same_length(*iterables, debug_failure: bool = False):
 
     If they are not the same length, raise an assertion error.
     """
-    from democritus_lists import lists_are_same_length
+    from d8s_lists import lists_are_same_length
 
     if not lists_are_same_length(*iterables, debug_failure=debug_failure):
         message = 'The given iterables are not the same length.'
