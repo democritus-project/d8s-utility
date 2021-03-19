@@ -10,6 +10,6 @@ pytest
 pytest-cov
 d8s-html==0.3.0
 d8s-timer==0.3.0
-d8s-file_system==0.3.0
+d8s-file_system==0.4.0
 d8s-strings==0.2.0
 bump2version
