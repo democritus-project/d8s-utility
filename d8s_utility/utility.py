@@ -277,7 +277,9 @@ def repeat_concurrently(n: int = 10):
     return actual_decorator
 
 
-def validate_keyword_arg_value(keyword: str, valid_keyword_values: Iterable[str], fail_if_keyword_not_found: bool = True):
+def validate_keyword_arg_value(
+    keyword: str, valid_keyword_values: Iterable[Any], fail_if_keyword_not_found: bool = True
+):
     """Validate that the value for the given keyword is in the list of valid_keyword_values."""
 
     def actual_decorator(func):
@@ -287,7 +289,7 @@ def validate_keyword_arg_value(keyword: str, valid_keyword_values: Iterable[str]
             if not keyword_exists and fail_if_keyword_not_found:
                 message = f'The keyword "{keyword}" was not given.'
                 raise ValueError(message)
-            elif keyword_exists and kwargs[keyword] not in valid_keyword_values:
+            if keyword_exists and kwargs[keyword] not in valid_keyword_values:
                 message = (
                     f'The value of the "{keyword}" keyword argument is not valid '
                     + f'(valid values are: {valid_keyword_values}).'
@@ -301,7 +303,7 @@ def validate_keyword_arg_value(keyword: str, valid_keyword_values: Iterable[str]
     return actual_decorator
 
 
-def validate_arg_value(arg_index: StrOrNumberType, valid_values: Iterable[str]):
+def validate_arg_value(arg_index: StrOrNumberType, valid_values: Iterable[Any]):
     """Validate that the value of the argument at the given arg_index is in the list of valid_values."""
 
     def actual_decorator(func):
@@ -311,9 +313,9 @@ def validate_arg_value(arg_index: StrOrNumberType, valid_values: Iterable[str]):
 
             try:
                 arg_value = args[arg_index_int]
-            except IndexError:
+            except IndexError as e:
                 message = f'No argument at index {arg_index_int}.'
-                raise ValueError(message)
+                raise ValueError(message) from e
 
             if arg_value not in valid_values:
                 message = (

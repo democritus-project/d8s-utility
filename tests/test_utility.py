@@ -19,10 +19,10 @@ from d8s_utility import (
     subprocess_run,
     unique_items,
     unsorted_values,
+    validate_arg_value,
+    validate_keyword_arg_value,
     wait_and_retry_on_failure,
     zip_if_same_length,
-    validate_keyword_arg_value,
-    validate_arg_value,
 )
 
 TEST_DIRECTORY_PATH = './test_files'
@@ -53,7 +53,7 @@ def validate_arg_value_test_func__arg_index_as_string(*args):
     return args[0]
 
 
-def test_validate_arg_value_docs_1():
+def test_validate_arg_value_docs__arg_index_as_string():
     validate_arg_value_test_func__arg_index_as_string(1)
     validate_arg_value_test_func__arg_index_as_string(2)
     validate_arg_value_test_func__arg_index_as_string(3)
@@ -90,7 +90,7 @@ def test_ignore_errors_docs_1():
 
     assert ignore_errors(f, (1)) == 2
     assert ignore_errors(f, (2)) == 3
-    assert ignore_errors(f, (0)) == None
+    assert ignore_errors(f, (0)) is None
 
 
 def test_zip_if_same_length_1():
