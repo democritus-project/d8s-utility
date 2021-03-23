@@ -151,9 +151,9 @@ def zip_if_same_length(*iterables, debug_failure: bool = False):
 
     If they are not the same length, raise an assertion error.
     """
-    from d8s_lists import lists_are_same_length
+    from d8s_lists import iterables_are_same_length
 
-    if not lists_are_same_length(*iterables, debug_failure=debug_failure):
+    if not iterables_are_same_length(*iterables, debug_failure=debug_failure):
         message = 'The given iterables are not the same length.'
         raise ValueError(message)
 

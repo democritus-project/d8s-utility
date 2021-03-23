@@ -160,7 +160,7 @@ def test_prettify_1():
 def test_subprocess_run_docs_1():
     command = 'ls'
     stdout, stderr = subprocess_run(command)
-    assert 'LICENSE\n' in stdout
+    assert 'COPYING\n' in stdout
     assert 'README.md\n' in stdout
 
     command = 'ls -la'
