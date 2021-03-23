@@ -287,9 +287,9 @@ def validate_keyword_arg_value(
         def wrapper(*args, **kwargs):
             keyword_exists = keyword in kwargs
             if not keyword_exists and fail_if_keyword_not_found:
-                message = f'The keyword "{keyword}" was not given.'
+                message = f'No keyword "{keyword}".'
                 raise ValueError(message)
-            if keyword_exists and kwargs[keyword] not in valid_keyword_values:
+            elif keyword_exists and kwargs[keyword] not in valid_keyword_values:
                 message = (
                     f'The value of the "{keyword}" keyword argument is not valid '
                     + f'(valid values are: {valid_keyword_values}).'
