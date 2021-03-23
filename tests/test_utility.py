@@ -5,6 +5,7 @@ import pytest
 from d8s_utility import (
     copy_first_arg,
     first_unsorted_value,
+    ignore_errors,
     is_sorted,
     last_unsorted_value,
     map_first_arg,
@@ -20,12 +21,76 @@ from d8s_utility import (
     unsorted_values,
     wait_and_retry_on_failure,
     zip_if_same_length,
+    validate_keyword_arg_value,
+    validate_arg_value,
 )
 
 TEST_DIRECTORY_PATH = './test_files'
 NON_EXISTENT_FILE_PATH = './foo'
 TEST_FILE_NAME = 'a'
 EXISTING_FILE_PATH = os.path.join(TEST_DIRECTORY_PATH, TEST_FILE_NAME)
+
+
+@validate_arg_value(0, (1, 2, 3))
+def validate_arg_value_test_func(*args):
+    return args[0]
+
+
+def test_validate_arg_value_docs_1():
+    validate_arg_value_test_func(1)
+    validate_arg_value_test_func(2)
+    validate_arg_value_test_func(3)
+
+    with pytest.raises(ValueError, match='is not valid'):
+        validate_arg_value_test_func(4)
+
+    with pytest.raises(ValueError, match='No argument at index 0.'):
+        validate_arg_value_test_func()
+
+
+@validate_arg_value('0', (1, 2, 3))
+def validate_arg_value_test_func__arg_index_as_string(*args):
+    return args[0]
+
+
+def test_validate_arg_value_docs_1():
+    validate_arg_value_test_func__arg_index_as_string(1)
+    validate_arg_value_test_func__arg_index_as_string(2)
+    validate_arg_value_test_func__arg_index_as_string(3)
+
+    with pytest.raises(ValueError, match='is not valid'):
+        validate_arg_value_test_func__arg_index_as_string(4)
+
+    with pytest.raises(ValueError, match='No argument at index 0.'):
+        validate_arg_value_test_func__arg_index_as_string()
+
+
+@validate_keyword_arg_value('foo', (1, 2, 3))
+def validate_keyword_arg_value_test_func(**kwargs):
+    return kwargs['foo']
+
+
+def test_validate_keyword_arg_value_docs_1():
+    validate_keyword_arg_value_test_func(foo=1)
+    validate_keyword_arg_value_test_func(foo=2)
+    validate_keyword_arg_value_test_func(foo=3)
+
+    with pytest.raises(ValueError):
+        validate_keyword_arg_value_test_func(foo=4, match='is not valid')
+
+    with pytest.raises(ValueError):
+        validate_keyword_arg_value_test_func(bar=1, match='was not given.')
+
+
+def test_ignore_errors_docs_1():
+    def f(n):
+        if n < 1:
+            raise RuntimeError('Aha!')
+        return n + 1
+
+    assert ignore_errors(f, (1)) == 2
+    assert ignore_errors(f, (2)) == 3
+    assert ignore_errors(f, (0)) == None
 
 
 def test_zip_if_same_length_1():
@@ -215,7 +280,7 @@ def test_retry_if_no_result_1():
     execution_time = timer_stop(timer_name)
 
     # make sure the retry_if_no_result_test_func was run twice with the appropriate amount of time in between
-    assert execution_time > 3
+    assert execution_time > 2.9
     assert result is None
 
 
@@ -231,7 +296,7 @@ def test_copy_first_arg_1():
 
     # a RecursionError will occur when trying to do a deep copy of beautifulsoup objects - see: https://github.com/biopython/biopython/issues/787, https://bugs.python.org/issue5508, and https://github.com/cloudtools/troposphere/issues/648...
     # this test makes sure that the `copy_first_arg` decorator will properly fall back from a deep copy to a shallow copy
-    html_text = get('https://hightower.space/', process_response=True)
+    html_text = get('https://hightower.space/projects', process_response=True)
     soup = html_soupify(html_text)
     copy_first_arg_test_func_a(soup)
 

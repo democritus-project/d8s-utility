@@ -1,7 +1,7 @@
 """This is a collection of functions that really don't belong anywhere else."""
 
 import functools
-from typing import Any, Dict, Iterable, List, Set, Union
+from typing import Any, Dict, Iterable, Set, Union
 
 from .utility_temp_utils import listify_first_arg
 
@@ -277,22 +277,22 @@ def repeat_concurrently(n: int = 10):
     return actual_decorator
 
 
-def validate_keyword_arg_value(keyword: str, valid_keyword_values: List[str], fail_if_keyword_not_found: bool = False):
+def validate_keyword_arg_value(keyword: str, valid_keyword_values: Iterable[str], fail_if_keyword_not_found: bool = True):
     """Validate that the value for the given keyword is in the list of valid_keyword_values."""
 
     def actual_decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            keyword_value = kwargs.get(keyword)
-            if not keyword_value and fail_if_keyword_not_found:
+            keyword_exists = keyword in kwargs
+            if not keyword_exists and fail_if_keyword_not_found:
                 message = f'The keyword "{keyword}" was not given.'
-                raise RuntimeError(message)
-            elif keyword_value not in valid_keyword_values:
+                raise ValueError(message)
+            elif keyword_exists and kwargs[keyword] not in valid_keyword_values:
                 message = (
-                    f'The value of the "{keyword}" keyword argument is not valid (valid values '
-                    + 'are: {valid_keyword_values}).'
+                    f'The value of the "{keyword}" keyword argument is not valid '
+                    + f'(valid values are: {valid_keyword_values}).'
                 )
-                raise RuntimeError(message)
+                raise ValueError(message)
 
             return func(*args, **kwargs)
 
@@ -301,21 +301,26 @@ def validate_keyword_arg_value(keyword: str, valid_keyword_values: List[str], fa
     return actual_decorator
 
 
-def validate_arg_value(arg_index: StrOrNumberType, valid_values: List[str]):
+def validate_arg_value(arg_index: StrOrNumberType, valid_values: Iterable[str]):
     """Validate that the value of the argument at the given arg_index is in the list of valid_values."""
 
     def actual_decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             arg_index_int = int(arg_index)
-            arg_value = args[arg_index_int]
+
+            try:
+                arg_value = args[arg_index_int]
+            except IndexError:
+                message = f'No argument at index {arg_index_int}.'
+                raise ValueError(message)
 
             if arg_value not in valid_values:
                 message = (
                     f'The value of the argument at index {arg_index} (whose value is "{arg_value}") '
                     + 'is not valid (valid values are: {valid_values}).'
                 )
-                raise RuntimeError(message)
+                raise ValueError(message)
 
             return func(*args, **kwargs)
 
