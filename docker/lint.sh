@@ -14,7 +14,5 @@ pylint --fail-under 9 d8s_utility/*.py
 
 flake8 d8s_utility/ tests/
 
-bandit -r d8s_utility/
-
 # we run black again at the end to undo any odd changes made by any of the linters above
 black d8s_utility/ tests/
