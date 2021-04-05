@@ -9,6 +9,7 @@ pytest
 pytest-cov
 d8s-html==0.*
 d8s-timer==0.*
-d8s-file_system==0.*
+d8s-file-system==0.*
 d8s-strings==0.*
 bump2version
+d8s-python==0.*
