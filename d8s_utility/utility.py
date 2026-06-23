@@ -24,7 +24,7 @@ def copy_first_arg(func):
         # see: https://github.com/biopython/biopython/issues/787, https://bugs.python.org/issue5508, and...
         # https://github.com/cloudtools/troposphere/issues/648
         except RecursionError:
-            message = 'Performing a deep copy on the first arg failed; I\'ll just perform a shallow copy.'
+            message = "Performing a deep copy on the first arg failed; I'll just perform a shallow copy."
             print(message)
             first_arg_copy = copy.copy(first_arg)
         return func(first_arg_copy, *other_args, **kwargs)
@@ -154,7 +154,7 @@ def zip_if_same_length(*iterables, debug_failure: bool = False):
     from d8s_lists import iterables_are_same_length
 
     if not iterables_are_same_length(*iterables, debug_failure=debug_failure):
-        message = 'The given iterables are not the same length.'
+        message = "The given iterables are not the same length."
         raise ValueError(message)
 
     for i in zip(*iterables):
@@ -163,12 +163,12 @@ def zip_if_same_length(*iterables, debug_failure: bool = False):
 
 def unique_items(iterable_a: Any, iterable_b: Any) -> Dict[str, Set[Any]]:
     """Find the values unique to iterable_a and iterable_b (relative to one another)."""
-    unique_items_list: Dict[str, Set[Any]] = {'a': set(), 'b': set()}
+    unique_items_list: Dict[str, Set[Any]] = {"a": set(), "b": set()}
 
     set_a = set(iterable_a)
     set_b = set(iterable_b)
-    unique_items_list['a'] = set_a.difference(set_b)
-    unique_items_list['b'] = set_b.difference(set_a)
+    unique_items_list["a"] = set_a.difference(set_b)
+    unique_items_list["b"] = set_b.difference(set_a)
 
     return unique_items_list
 
@@ -292,7 +292,7 @@ def validate_keyword_arg_value(
             elif keyword_exists and kwargs[keyword] not in valid_keyword_values:
                 message = (
                     f'The value of the "{keyword}" keyword argument is not valid '
-                    + f'(valid values are: {valid_keyword_values}).'
+                    + f"(valid values are: {valid_keyword_values})."
                 )
                 raise ValueError(message)
 
@@ -314,13 +314,13 @@ def validate_arg_value(arg_index: StrOrNumberType, valid_values: Iterable[Any]):
             try:
                 arg_value = args[arg_index_int]
             except IndexError as e:
-                message = f'No argument at index {arg_index_int}.'
+                message = f"No argument at index {arg_index_int}."
                 raise ValueError(message) from e
 
             if arg_value not in valid_values:
                 message = (
                     f'The value of the argument at index {arg_index} (whose value is "{arg_value}") '
-                    + 'is not valid (valid values are: {valid_values}).'
+                    + "is not valid (valid values are: {valid_values})."
                 )
                 raise ValueError(message)
 
