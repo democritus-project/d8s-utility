@@ -412,16 +412,7 @@ def request_or_read_first_arg_test_func(a):
     return a
 
 
-@pytest.mark.xfail(
-    reason="pre-existing, unrelated to tooling migration: live network fetch of https://hightower.space/projects which now returns 404",
-    strict=False,
-)
 def test_request_or_read_first_arg_1():
-    # test a url
-    s = "https://hightower.space/projects"
-    result = request_or_read_first_arg_test_func(s)
-    assert "Floyd Hightower" in result
-
     # test a file path
     s = os.path.abspath(__file__)
     result = request_or_read_first_arg_test_func(s)
@@ -436,3 +427,13 @@ def test_request_or_read_first_arg_1():
     s = "foobar"
     result = request_or_read_first_arg_test_func(s)
     assert result == s
+
+
+@pytest.mark.xfail(
+    reason="pre-existing, unrelated to tooling migration: live network fetch of https://hightower.space/projects which now returns 404",
+    strict=False,
+)
+def test_request_or_read_first_arg_url():
+    s = "https://hightower.space/projects"
+    result = request_or_read_first_arg_test_func(s)
+    assert "Floyd Hightower" in result
