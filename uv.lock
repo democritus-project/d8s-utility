@@ -64,27 +64,15 @@ sdist = { url = "https://files.pythonhosted.org/packages/87/c6/53da25344e3e3a9c0
 
 [[package]]
 name = "beautifulsoup4"
-version = "4.15.0"
+version = "4.14.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "soupsieve" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/43/65/318323f98dbee45d42dff61d8f047181bc6f2268a9068cfad035a46be5af/beautifulsoup4-4.15.0.tar.gz", hash = "sha256:288e3ca7d54b06f2ac191970bc275c1939cb46d450b255bf6718b04aa37ab4f7", size = 632571, upload-time = "2026-06-07T16:44:20.453Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c3/b0/1c6a16426d389813b48d95e26898aff79abbde42ad353958ad95cc8c9b21/beautifulsoup4-4.14.3.tar.gz", hash = "sha256:6292b1c5186d356bba669ef9f7f051757099565ad9ada5dd630bd9de5fa7fb86", size = 627737, upload-time = "2025-11-30T15:08:26.084Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/c6/92fcd42f1ba33e1184263f25bfabf3d27c383410470f169e4b8163bf9c17/beautifulsoup4-4.15.0-py3-none-any.whl", hash = "sha256:d6f88de62e1d4e38ecb1077eb9724cd0eff29d2a08ca16a401e9b9e93f117cf9", size = 109924, upload-time = "2026-06-07T16:44:21.566Z" },
-]
-
-[[package]]
-name = "bs4"
-version = "0.0.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "beautifulsoup4" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/c9/aa/4acaf814ff901145da37332e05bb510452ebed97bc9602695059dd46ef39/bs4-0.0.2.tar.gz", hash = "sha256:a48685c58f50fe127722417bae83fe6badf500d54b55f7e39ffe43b798653925", size = 698, upload-time = "2024-01-17T18:15:47.371Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/51/bb/bf7aab772a159614954d84aa832c129624ba6c32faa559dfb200a534e50b/bs4-0.0.2-py2.py3-none-any.whl", hash = "sha256:abf8742c0805ef7f662dce4b51cca104cffe52b835238afc169142ab9b3fbccc", size = 1189, upload-time = "2024-01-17T18:15:48.613Z" },
+    { url = "https://files.pythonhosted.org/packages/1a/39/47f9197bdd44df24d67ac8893641e16f386c984a0619ef2ee4c51fbbc019/beautifulsoup4-4.14.3-py3-none-any.whl", hash = "sha256:0918bfe44902e6ad8d57732ba310582e98da931428d231a5ecb9e7c703a735bb", size = 107721, upload-time = "2025-11-30T15:08:24.087Z" },
 ]
 
 [[package]]
@@ -452,7 +440,7 @@ wheels = [
 
 [[package]]
 name = "d8s-html"
-version = "0.6.1"
+version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -461,9 +449,9 @@ dependencies = [
     { name = "html-to-json" },
     { name = "html2text" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/75/2c/3523025172dfbaa148d5abe54d3349c04d96122d74b4e0734fee4956e2ae/d8s_html-0.6.1.tar.gz", hash = "sha256:4153122cdea87a1378e00c1a3a42d5e36b349c4e0f84fb9fd6943dc14c50ffa0", size = 28113, upload-time = "2022-06-16T09:17:26.633Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fe/9d/a1c403a58e655913519d9d4fa0de13ff9da69969dd04b8756e3d94a67f00/d8s_html-0.7.0.tar.gz", hash = "sha256:3a64a726be9b406823509b5c0c1f01af1b6f4cc863f452b693570055607f8d64", size = 97888, upload-time = "2026-07-01T12:06:45.195Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/28/70cc7326d5bf280c076f8f21fed8043d2fc6d648a60ad57ad33749884094/d8s_html-0.6.1-py2.py3-none-any.whl", hash = "sha256:7ea76942e79bc604209d7812a22cc5f79f899ad5503f27502c543027090d95d4", size = 23194, upload-time = "2022-06-16T09:17:24.52Z" },
+    { url = "https://files.pythonhosted.org/packages/d5/5f/123b1d835927a3b701bab0f28b2609f586d4914805b6426a551eb4f45fc3/d8s_html-0.7.0-py3-none-any.whl", hash = "sha256:649d21ac7a1b1ad75e436df5baa246f3a5fa76e2bafdc2dab885565380793b1e", size = 20849, upload-time = "2026-07-01T12:06:43.916Z" },
 ]
 
 [[package]]
@@ -752,14 +740,14 @@ wheels = [
 
 [[package]]
 name = "html-to-json"
-version = "2.0.0"
+version = "3.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "bs4" },
+    { name = "beautifulsoup4" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/da/83/c425c27e4c8f4b622901f8b58ad48e53be14a080d341a70c67570f1ec30a/html_to_json-2.0.0.tar.gz", hash = "sha256:3fc848f40618f444f8e9971f88a22fef041d0cb4569464de018dcf8e3c37669e", size = 54197, upload-time = "2021-02-27T17:34:50.824Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/94/9a/865878032c9a1b30ee172a6d5eb036645179619320c96e7af3f08d30f0b6/html_to_json-3.0.0.tar.gz", hash = "sha256:1f58229aff7ca10f510415280c466c637e4a895885dd8aac6838f389254e795a", size = 542592, upload-time = "2026-05-13T10:27:45.719Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5a/79/aa64abd13c010a02c3cc61f970295357fb0a65505eb096f7c03a2e7cdebd/html_to_json-2.0.0-py2.py3-none-any.whl", hash = "sha256:707ba86390ac05cf59d36a106f3d3da34b6075a245ee597d4c6c06ca9a6d0898", size = 6440, upload-time = "2021-02-27T17:34:49.757Z" },
+    { url = "https://files.pythonhosted.org/packages/de/fc/9b77c9aaf53076d49fada65f12db2dc688b4c359cf82cb89d608413613d3/html_to_json-3.0.0-py3-none-any.whl", hash = "sha256:5ea910fc6d9609f5e1a04b2fd13a06c462a4d144ae64bfd49103d41125e244d3", size = 7390, upload-time = "2026-05-13T10:27:44.233Z" },
 ]
 
 [[package]]
