@@ -561,15 +561,15 @@ wheels = [
 
 [[package]]
 name = "d8s-timer"
-version = "0.5.0"
+version = "0.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "d8s-dates" },
     { name = "d8s-uuids" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/5f/3896f56068c7e41f5aef3ffbb5db1895d86c3d9f6063d568b95b4d814733/d8s_timer-0.5.0.tar.gz", hash = "sha256:1149c0816107629d1e751da23bdd2043c7a96480eba7bdcf7e3d989188498115", size = 23585, upload-time = "2021-05-07T10:58:45.298Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/da/9f/ad75200f69b927375109d1d0cd7db2efb4d7e5911b816e58314236fe9310/d8s_timer-0.6.0.tar.gz", hash = "sha256:b5ede2849274edf1efd18271af9eb9acf631329a353d85e20158d71fc44559ec", size = 109709, upload-time = "2026-07-01T12:07:22.104Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6b/2f/de151231fcc31730f3ca3b434ad01b356b74e48a9ebd8c1253746efa2049/d8s_timer-0.5.0-py2.py3-none-any.whl", hash = "sha256:5d2ba2bc2805389108ea2bfc0d8a03bd50bb58e060b590ab5a0176eb7e5497b6", size = 19869, upload-time = "2021-05-07T10:58:42.522Z" },
+    { url = "https://files.pythonhosted.org/packages/9f/64/488d2dbc7d378f61844b51c7703bb80ede398b6d0ea607c03b059efe430b/d8s_timer-0.6.0-py3-none-any.whl", hash = "sha256:0aee779c36248ac1fdb96b9123ede484aafd072675aac9f20ba135453f99c787", size = 18913, upload-time = "2026-07-01T12:07:20.821Z" },
 ]
 
 [[package]]
